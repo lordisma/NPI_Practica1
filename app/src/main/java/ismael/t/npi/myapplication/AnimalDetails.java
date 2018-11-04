@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.speech.tts.TextToSpeech;
@@ -30,15 +32,27 @@ import ai.api.model.Result;
 
 public class AnimalDetails extends AppCompatActivity implements View.OnClickListener , AIListener {
 
+    // Elementos de la UI
     ImageView animalView, friendship, peculiarity;
     TextView info;
     FloatingActionButton speak;
+    private TextView informacion;
+
+    // Variables para la inicializacion de los servicios de Dialog
     private AIService aiService;
     private TextToSpeech speaker;
     private String Animal_activo;
-    private String Animal_entrada;
-    private TextView informacion;
 
+    // Sensores
+    private final SensorManager sManager;
+    private final Sensor sGyroscope;
+
+
+
+    public AnimalDetails(){
+        sManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sGyroscope = sManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +68,9 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         peculiarity = (ImageView) findViewById(R.id.peculiarity);
         speak = (FloatingActionButton) findViewById(R.id.followTalk);
 
-
-
-
-
+        //Introducir nuevos valores atravez del Bundle
         Bundle b = getIntent().getExtras();
         final ArrayList<String> palabra = b.getStringArrayList("key");
-
-
-
 
         int resID_1 = getResources().getIdentifier(palabra.get(0),
                 "drawable", getPackageName());
@@ -71,22 +79,12 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
                 "drawable", getPackageName());
 
 
-        Animal_entrada=palabra.get(0);
-
-
         animalView.setImageResource( resID_1);
-
-
-       // imagen_info=findViewById(R.id.Imagencomponentes);
-       // imagen_info.setImageResource(resID_2);
 
         informacion=findViewById (R.id.info);
         informacion.setText(palabra.get(2));
 
-
-
-
-
+        //Inicializacion de las funciones del text to speech y Dialog
         final AIConfiguration config = new AIConfiguration("23e6b35921f14ffeac0dfd9724403d75",
                 AIConfiguration.SupportedLanguages.Spanish,
                 AIConfiguration.RecognitionEngine.System);
@@ -312,4 +310,6 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
 
     }
+
+
 }
