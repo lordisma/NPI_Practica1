@@ -20,6 +20,11 @@ public class principal extends AppCompatActivity {
 
     CardView readerQR, speaker;
 
+    /*
+     * En el metodo onCreate inicializamor el lector QR
+     * y el speaker para el uso de estos con las
+     * funcionalidades de DialogFlow y ZXING
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,9 +55,15 @@ public class principal extends AppCompatActivity {
         });
     }
 
+    /*
+    * Funcion lanzada con el boton de speaker la cual nos lleva a la ventana
+    * de Detalles de los animales e inicializa esta con valores de presentacion
+    * los cuales sirven de tutorial
+    */
     protected void Start(){
         Intent animal_activity = new Intent(this, AnimalDetails.class);
         Bundle b = new Bundle();
+
         ArrayList<String> Animal1 = new ArrayList<String>();
         Animal1.add("biodomo");
         Animal1.add("lemuretiquetas");
