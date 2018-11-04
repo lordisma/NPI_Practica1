@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -30,7 +32,7 @@ import ai.api.model.AIError;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
-public class AnimalDetails extends AppCompatActivity implements View.OnClickListener , AIListener {
+public class AnimalDetails extends AppCompatActivity implements View.OnClickListener , AIListener ,SensorEventListener{
 
     // Elementos de la UI
     ImageView animalView, friendship, peculiarity;
@@ -42,17 +44,26 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     private AIService aiService;
     private TextToSpeech speaker;
     private String Animal_activo;
+    private int animal_vista=0;
 
     // Sensores
-    private final SensorManager sManager;
-    private final Sensor sGyroscope;
+    //private final SensorManager sManager;
+    //private final Sensor sGyroscope;
+
+    private SensorManager sensorManager;
+    private Sensor proximitySensor;
+
+    private long mitiempo=0;
+    private long Limite=2500;
 
 
 
+/*
     public AnimalDetails(){
         sManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sGyroscope = sManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
     }
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,11 +113,22 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         });
 
         speak.setOnClickListener(this);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        proximitySensor =sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+
+        if(proximitySensor == null) {
+            Toast.makeText(this, "Error no tiene sensor de proximidad", Toast.LENGTH_SHORT).show();
+            finish(); // Close app
+        }
+
+        sensorManager.registerListener( this,proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+
     }
 
     @Override
     public void onClick(View view) {
-       // Toast.makeText(this, "Aqui iria dialog", Toast.LENGTH_SHORT).show();
+
         ChequearPermisoAudio();
 
         speaker.stop();
@@ -312,4 +334,57 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     }
 
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        long now = System.currentTimeMillis();
+        if((now- mitiempo) >Limite) {
+            if (event.values[0] < proximitySensor.getMaximumRange()) {
+
+                switch (animal_vista){
+                    case 0:
+
+                        Lemur_llamar_chatbox();
+                        break;
+                   case 1:
+
+                        Nutria_llamar_chatbox();
+                        break;
+
+                    case 2:
+
+                        Anguila_llamar_chatbox();
+                        break;
+
+                    case 3:
+
+                        Ajolote_llamar_chatbox();
+                        break;
+                    case 4:
+
+                        Rana_cornuda_llamar_chatbox();
+                        break;
+
+                    case 5:
+
+                        Mutjac_llamar_chatbox();
+                        break;
+                }
+                animal_vista+=1;
+
+                if (animal_vista==6){
+                    animal_vista=0;
+                }
+
+
+
+            }
+            mitiempo=now;
+
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 }
