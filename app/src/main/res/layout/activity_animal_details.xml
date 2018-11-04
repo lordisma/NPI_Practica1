@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintAnimal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AnimalDetails">
+
+    <ImageView
+        android:id="@+id/peculiarity"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/cerclebackgroundyell"
+        app:layout_constraintStart_toEndOf="@+id/friendship"
+        app:layout_constraintTop_toBottomOf="@+id/animalimagen"
+        app:srcCompat="@drawable/ic_intelligent" />
+
+    <ImageView
+        android:id="@+id/animalimagen"
+        android:layout_width="0dp"
+        android:layout_height="161dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/nutria" />
+
+    <ImageView
+        android:id="@+id/friendship"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/cerclebackgroundyell"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/animalimagen"
+        app:srcCompat="@drawable/ic_friendly" />
+
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="0dp"
+        android:layout_height="226dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:text="Los lutrinos , conocidos comúnmente como nutrias, son una subfamilia de mamíferos carnívoros de la gran familia Mustelidae. Existen 13 especies de nutrias repartidas en 7 géneros,1​ con una distribución de la población prácticamente mundial. En América del Sur es común que se llame «nutria» a otro animal, el coipo o quiyá , de costumbres predominantemente acuáticas, pero es un roedor de la familia de los miocastóridos."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/peculiarity" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/gifImageView"
+        android:layout_width="211dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ajolotegif"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info"
+        app:layout_constraintVertical_bias="1.0" />
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/followTalk"
+        style="@style/Widget.Design.FloatingActionButton"
+        android:layout_width="57dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="24dp"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:elevation="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/gifImageView"
+        app:layout_constraintTop_toBottomOf="@+id/info"
+        app:layout_constraintVertical_bias="0.376"
+        app:srcCompat="@drawable/ic_mic_black_24dp" />
+
+</android.support.constraint.ConstraintLayout>
