@@ -11,6 +11,7 @@ import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.speech.tts.TextToSpeech;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +23,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 
@@ -47,23 +51,14 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     private int animal_vista=0;
 
     // Sensores
-    //private final SensorManager sManager;
-    //private final Sensor sGyroscope;
-
     private SensorManager sensorManager;
     private Sensor proximitySensor;
+    private Sensor acelerometeSensor;
 
-    private long mitiempo=0;
+    private long proximityStap = 0, accelerometeStap = 0;
     private long Limite=2500;
 
 
-
-/*
-    public AnimalDetails(){
-        sManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sGyroscope = sManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-    }
-    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +73,9 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         friendship = (ImageView) findViewById(R.id.friendship);
         peculiarity = (ImageView) findViewById(R.id.peculiarity);
         speak = (FloatingActionButton) findViewById(R.id.followTalk);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        acelerometeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
         //Introducir nuevos valores atravez del Bundle
         Bundle b = getIntent().getExtras();
@@ -114,15 +112,18 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
         speak.setOnClickListener(this);
 
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        proximitySensor =sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-
         if(proximitySensor == null) {
             Toast.makeText(this, "Error no tiene sensor de proximidad", Toast.LENGTH_SHORT).show();
             finish(); // Close app
         }
 
+        if(acelerometeSensor == null) {
+            Toast.makeText(this, "Error no tiene sensor de acelerometro", Toast.LENGTH_SHORT).show();
+            finish(); // Close app
+        }
+
         sensorManager.registerListener( this,proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener( this,acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
     }
 
@@ -336,8 +337,47 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+
+        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY){
+            ProximityChanged(event);
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
+            AccelerometeChanged(event);
+        }
+
+    }
+
+
+
+    public void AccelerometeChanged(SensorEvent event){
         long now = System.currentTimeMillis();
-        if((now- mitiempo) >Limite) {
+
+        if ((now - accelerometeStap) > Limite){
+            accelerometeStap = now;
+
+
+            if (event.values[0] > 35 ||
+                event.values[1] > 35 ||
+                event.values[2] > 35){
+
+                IntentIntegrator integrator = new IntentIntegrator(this);
+                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+                integrator.setPrompt("Scan");
+                integrator.setCameraId(0);
+                integrator.setBeepEnabled(false);
+                integrator.setBarcodeImageEnabled(false);
+                integrator.initiateScan();
+
+            }
+        }
+
+
+    }
+
+    public void ProximityChanged(SensorEvent event){
+        long now = System.currentTimeMillis();
+        if((now - proximityStap) >Limite) {
             if (event.values[0] < proximitySensor.getMaximumRange()) {
 
                 switch (animal_vista){
@@ -378,7 +418,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
 
             }
-            mitiempo=now;
+            proximityStap=now;
 
         }
     }
@@ -386,5 +426,70 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Codigo cancelado", Toast.LENGTH_SHORT).show();
+            } else {
+
+                switch ( result.getContents()){
+                    case "lemur":
+
+                        Lemur_llamar_chatbox();
+                        animal_vista=0;
+                        break;
+
+                    case "nutria":
+
+                        Nutria_llamar_chatbox();
+                        animal_vista=1;
+                        break;
+
+                    case "anguila jardinera":
+
+                        Anguila_llamar_chatbox();
+                        animal_vista=2;
+                        break;
+
+                    case "ajolote":
+
+                        Ajolote_llamar_chatbox();
+                        animal_vista=3;
+                        break;
+                    case "rana cornuda":
+
+                        Rana_cornuda_llamar_chatbox();
+                        animal_vista=4;
+                        break;
+
+                    case "muntjac":
+
+                        Mutjac_llamar_chatbox();
+                        animal_vista=5;
+                        break;
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+
+        }
     }
 }

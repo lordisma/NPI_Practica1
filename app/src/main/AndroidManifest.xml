@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ismael.t.npi.myapplication">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -8,7 +9,7 @@
         android:name="android.hardware.sensor.proximity"
         android:required="true" />
     <uses-feature
-        android:name="android.hardware.sensor.gyroscope"
+        android:name="android.hardware.sensor.accelerometer"
         android:required="true" />
 
     <application
@@ -30,6 +31,11 @@
             android:label="Seleccion"
             android:theme="@style/ActionBar" />
         <activity android:name=".AnimalDetails"></activity>
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="portrait"
+            tools:replace="android:screenOrientation"
+            android:stateNotNeeded="true"/>
     </application>
 
 </manifest>
