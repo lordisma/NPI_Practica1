@@ -3,6 +3,7 @@ package ismael.t.npi.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,11 +17,19 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 
+import ai.api.AIDataService;
+import ai.api.AIServiceException;
+import ai.api.android.AIConfiguration;
+import ai.api.android.AIService;
+import ai.api.model.AIRequest;
+import ai.api.model.AIResponse;
+
 public class principal extends AppCompatActivity {
 
     CardView readerQR, speaker;
     public  boolean mapa =false;
-
+    private AIRequest mensaje_dialog;
+    private AIDataService datos;
     /*
      * En el metodo onCreate inicializamor el lector QR
      * y el speaker para el uso de estos con las
@@ -55,6 +64,13 @@ public class principal extends AppCompatActivity {
             }
         });
         mapa=false;
+        final AIConfiguration config = new AIConfiguration("23e6b35921f14ffeac0dfd9724403d75",
+                AIConfiguration.SupportedLanguages.Spanish,
+                AIConfiguration.RecognitionEngine.System);
+        datos = new AIDataService( config);
+        mensaje_dialog = new AIRequest();
+
+
     }
 
     /*
@@ -71,7 +87,7 @@ public class principal extends AppCompatActivity {
         Animal1.add("lemuretiquetas");
         Animal1.add("WELLCOME TO BIODOMO\nAnimales disponibles: ajolotes, nutrias, lemures, muntjacs, ranas cornudas y anguilas jardineras \nPreguntas:que les gusta comer, donde viven, como se reproducen, como son, cuanto miden, cuanto pesan");
         Animal1.add("Hola. Bienvenido a Biodomo. Soy Wooper y durante esta aventura yo seré tu guía. Puedes preguntarme sobre ajolotes, nutrias, lemures, muntjacs, ranas cornudas y anguilas jardineras. ¡Sé mucho sobre ellos! Conozco lo que les gusta comer, donde viven, como se reproducen, como son, cuanto miden, cuanto pesan... Llevo mucho tiempo observándolos. ");
-
+        Animal1.add("0");
         b.putStringArrayList("key",Animal1 );
         animal_activity.putExtras(b);
 
@@ -128,30 +144,38 @@ public class principal extends AppCompatActivity {
                     case "lemur":
 
                         Lemur_llamar_chatbox();
+                        CambioAnimal("lemur");
                         break;
 
                     case "nutria":
 
                         Nutria_llamar_chatbox();
+                        CambioAnimal("nutrias");
                         break;
 
                     case "anguila jardinera":
 
                         Anguila_llamar_chatbox();
+                        CambioAnimal("anguila jardinera");
                         break;
 
                     case "ajolote":
 
                         Ajolote_llamar_chatbox();
+                        CambioAnimal("ajolote");
                         break;
                     case "rana cornuda":
 
                         Rana_cornuda_llamar_chatbox();
+                        CambioAnimal("rana cornuda");
+
                         break;
 
                     case "muntjac":
 
                         Mutjac_llamar_chatbox();
+                        CambioAnimal("muntjac");
+
                         break;
                 }
             }
@@ -162,6 +186,31 @@ public class principal extends AppCompatActivity {
     }
 
 
+
+    public  void CambioAnimal(String animal){
+
+        mensaje_dialog.setQuery(animal);
+
+        new AsyncTask<AIRequest, Void, AIResponse>() {
+            @Override
+            protected AIResponse doInBackground(AIRequest... requests) {
+
+                try {
+                    final AIResponse response = datos.request(mensaje_dialog);
+                    return response;
+                } catch (AIServiceException e) {
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(AIResponse aiResponse) {
+                if (aiResponse != null) {
+
+                }
+            }
+        }.execute(mensaje_dialog);
+
+    }
     public void Lemur_llamar_chatbox() {
 
         Intent animal_activity = new Intent(this, AnimalDetails.class);
@@ -171,6 +220,7 @@ public class principal extends AppCompatActivity {
         Animal1.add("lemuretiquetas");
         Animal1.add("Es un primate de hábitos estrictamente diurnos que pasa la mayor parte del tiempo en los árboles, aunque también frecuenta el suelo. Es sociable y vive en grupos de 5 a 25 individuos. Es polígamo y usa su característica cola para hacer señales visuales y odoríferas. Cuando camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");
         Animal1.add("Aqui puedes ver al lemur");
+        Animal1.add("0");
         b.putStringArrayList("key",Animal1 );
         animal_activity.putExtras(b);
 
@@ -193,6 +243,7 @@ public class principal extends AppCompatActivity {
         Animal1.add("lemuretiquetas");
         Animal1.add("Es un animal muy sociable que vive en grupos familiares. Es monógama. Dedica gran parte del día a jugar y comunicarse entre ellas. Se han identificado hasta doce vocalizaciones diferentes además de señales visuales, hormonales y táctiles, como el acicalamiento social. Tiene gran agilidad en sus manos que las utiliza para cazar cangrejos, moluscos y peces por el tacto, levantar piedras o construir madrigueras en las orillas de los ríos.");
         Animal1.add("Aqui puedes ver a la nutria");
+        Animal1.add("1");
         b.putStringArrayList("key",Animal1 );
         animal_activity.putExtras(b);
 
@@ -214,6 +265,7 @@ public class principal extends AppCompatActivity {
         Animal1.add("lemuretiquetas");
         Animal1.add("Pez anguiliforme sin escamas. Vive semienterrado en la arena del arrecife formando colonias donde se esconde a la mínima señal de peligro. Es pacífico y tímido. Se alimenta de zooplancton. Las larvas son planctónicos hasta que alcanzan el tamaño suficiente para hacer su madriguera");
         Animal1.add("Aqui puedes ver a la anguila jardinera");
+        Animal1.add("2");
         b.putStringArrayList("key",Animal1 );
         animal_activity.putExtras(b);
 
@@ -234,6 +286,7 @@ public class principal extends AppCompatActivity {
         Animal1.add("lemuretiquetas");
         Animal1.add("Salamandra endémica de algunas lagunas mejicanas. Su desarrollo es muy peculiar ya que alcanza el estado adulto sin terminar la metamorfosis, es decir, mantiene la forma larvaria durante toda su vida. Tiene hábitos nocturnos. Se alimenta de invertebrados.");
         Animal1.add("Aqui puedes ver al ajolote");
+        Animal1.add("3");
         b.putStringArrayList("key",Animal1 );
         animal_activity.putExtras(b);
 
@@ -254,6 +307,7 @@ public class principal extends AppCompatActivity {
         Animal1.add("lemuretiquetas");
         Animal1.add("Rana robusta que se oculta entre las hojas muertas del suelo de los bosques húmedos utilizando su coloración críptica y apariencia de hoja. Sus ataques son explosivos. Salta sobre la presa y de inmediato la captura y engulle. Es muy voraz. Captura insectos y arácnidos.");
         Animal1.add("Aqui puedes ver a la sorprendente rana cornuda");
+        Animal1.add("4");
         b.putStringArrayList("key",Animal1 );
         animal_activity.putExtras(b);
         startActivity(animal_activity);
@@ -271,6 +325,7 @@ public class principal extends AppCompatActivity {
         Animal1.add("lemuretiquetas");
         Animal1.add("Pequeño ciervo de bosque que se mueve con agilidad entre la espesura de la jungla. El macho posee una pequeña cornamenta y colmillos que sobresalen del maxilar superior y la hembra una protuberancia con un mechón de pelo. Es de hábitos solitarios. Come hojas, frutas y pequeños animales.");
         Animal1.add("Aqui puedes ver el muntjac tambien conocido como ciervo raton");
+        Animal1.add("5");
         b.putStringArrayList("key",Animal1 );
         animal_activity.putExtras(b);
 

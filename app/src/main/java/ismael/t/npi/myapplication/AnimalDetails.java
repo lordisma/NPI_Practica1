@@ -144,6 +144,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         sensorManager.registerListener( this,proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener( this,acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
         mapa=false;
+        animal_vista=Integer.parseInt( palabra.get(4));
     }
 
     @Override
