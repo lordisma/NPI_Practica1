@@ -66,7 +66,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     private long proximityStap = 0, accelerometeStap = 0;
     private long Limite=2500;
 
-    private AIRequest prueba;
+    private AIRequest mensaje_dialog;
     private AIDataService datos;
 
 
@@ -110,7 +110,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         aiService = AIService.getService(this, config);
         datos = new AIDataService( config);
         aiService.setListener(this);
-        prueba = new AIRequest();
+        mensaje_dialog = new AIRequest();
 
 
         gif = (GifImageView ) findViewById(R.id.gifImageView);
@@ -401,14 +401,14 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     public  void CambioAnimal(String animal){
 
-        prueba.setQuery(animal);
+        mensaje_dialog.setQuery(animal);
 
         new AsyncTask<AIRequest, Void, AIResponse>() {
             @Override
             protected AIResponse doInBackground(AIRequest... requests) {
 
                 try {
-                    final AIResponse response = datos.request(prueba);
+                    final AIResponse response = datos.request(mensaje_dialog);
                     return response;
                 } catch (AIServiceException e) {
                 }
@@ -420,7 +420,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
                 }
             }
-        }.execute(prueba);
+        }.execute(mensaje_dialog);
 
     }
 
