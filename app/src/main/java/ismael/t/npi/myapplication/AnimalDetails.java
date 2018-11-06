@@ -1,6 +1,7 @@
 package ismael.t.npi.myapplication;
 
 import android.Manifest;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -29,12 +31,17 @@ import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 
+import ai.api.AIDataService;
 import ai.api.AIListener;
+import ai.api.AIServiceException;
+import ai.api.RequestExtras;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
 import ai.api.model.AIError;
+import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
+import pl.droidsonroids.gif.GifImageView;
 
 public class AnimalDetails extends AppCompatActivity implements View.OnClickListener , AIListener ,SensorEventListener{
 
@@ -42,6 +49,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     ImageView animalView, friendship, peculiarity;
     TextView info;
     FloatingActionButton speak;
+    GifImageView gif;
     private TextView informacion;
 
     // Variables para la inicializacion de los servicios de Dialog
@@ -58,6 +66,8 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     private long proximityStap = 0, accelerometeStap = 0;
     private long Limite=2500;
 
+    private AIRequest prueba;
+    private AIDataService datos;
 
 
     @Override
@@ -98,15 +108,23 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
                 AIConfiguration.SupportedLanguages.Spanish,
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
+        datos = new AIDataService( config);
         aiService.setListener(this);
+        prueba = new AIRequest();
+
+
+        gif = (GifImageView ) findViewById(R.id.gifImageView);
+        gif.setImageResource(R.drawable.ajolotegif);
+
 
         speaker = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 speaker.setPitch(2);
                 speaker.setSpeechRate(2);
-                speaker.speak(palabra.get(3), TextToSpeech.QUEUE_ADD, null, null);
-
+                if (palabra.get(3) !=null) {
+                    speaker.speak(palabra.get(3), TextToSpeech.QUEUE_ADD, null, null);
+                }
             }
         });
 
@@ -157,6 +175,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             case "lemur":
 
                 Lemur_llamar_chatbox();
+
                 break;
 
             case "nutria":
@@ -225,6 +244,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         if (speaker.isSpeaking())
             speaker.stop();
         speaker.shutdown();
+
 
         super.onDestroy();
     }
@@ -357,9 +377,12 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             accelerometeStap = now;
 
 
-            if (event.values[0] > 35 ||
-                event.values[1] > 35 ||
-                event.values[2] > 35){
+            if (event.values[0] > 10 ||
+                event.values[1] > 10 ||
+                event.values[2] > 10||
+                event.values[0] < -10 ||
+                event.values[1] < -10 ||
+                event.values[2] < -10){
 
                 IntentIntegrator integrator = new IntentIntegrator(this);
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
@@ -375,6 +398,33 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     }
 
+
+    public  void CambioAnimal(String animal){
+
+        prueba.setQuery(animal);
+
+        new AsyncTask<AIRequest, Void, AIResponse>() {
+            @Override
+            protected AIResponse doInBackground(AIRequest... requests) {
+
+                try {
+                    final AIResponse response = datos.request(prueba);
+                    return response;
+                } catch (AIServiceException e) {
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(AIResponse aiResponse) {
+                if (aiResponse != null) {
+
+                }
+            }
+        }.execute(prueba);
+
+    }
+
+
     public void ProximityChanged(SensorEvent event){
         long now = System.currentTimeMillis();
         if((now - proximityStap) >Limite) {
@@ -384,29 +434,36 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
                     case 0:
 
                         Lemur_llamar_chatbox();
+                        CambioAnimal("lemur");
+
                         break;
                    case 1:
 
                         Nutria_llamar_chatbox();
+                        CambioAnimal("nutrias");
                         break;
 
                     case 2:
 
                         Anguila_llamar_chatbox();
+                        CambioAnimal("anguila jardinera");
                         break;
 
                     case 3:
 
                         Ajolote_llamar_chatbox();
+                        CambioAnimal("ajolote");
                         break;
                     case 4:
 
                         Rana_cornuda_llamar_chatbox();
+                        CambioAnimal("rana cornuda");
                         break;
 
                     case 5:
 
                         Mutjac_llamar_chatbox();
+                        CambioAnimal("muntjac");
                         break;
                 }
                 animal_vista+=1;
@@ -431,6 +488,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        gif.setImageResource(R.drawable.ajolotegif);
         sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -439,6 +497,8 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        if (speaker.isSpeaking())
+            speaker.stop();
     }
 
     @Override
@@ -455,11 +515,13 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
                         Lemur_llamar_chatbox();
                         animal_vista=0;
+                        CambioAnimal("lemur");
                         break;
 
                     case "nutria":
 
                         Nutria_llamar_chatbox();
+                        CambioAnimal("nutrias");
                         animal_vista=1;
                         break;
 
@@ -467,22 +529,26 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
                         Anguila_llamar_chatbox();
                         animal_vista=2;
+                        CambioAnimal("anguila jardinera");
                         break;
 
                     case "ajolote":
 
                         Ajolote_llamar_chatbox();
+                        CambioAnimal("ajolote");
                         animal_vista=3;
                         break;
                     case "rana cornuda":
 
                         Rana_cornuda_llamar_chatbox();
+                        CambioAnimal("rana cornuda");
                         animal_vista=4;
                         break;
 
                     case "muntjac":
 
                         Mutjac_llamar_chatbox();
+                        CambioAnimal("muntjac");
                         animal_vista=5;
                         break;
                 }
