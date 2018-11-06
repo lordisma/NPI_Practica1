@@ -1,13 +1,13 @@
 package ismael.t.npi.myapplication;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class principal extends AppCompatActivity {
 
     CardView readerQR, speaker;
+    public  boolean mapa =false;
 
     /*
      * En el metodo onCreate inicializamor el lector QR
@@ -53,6 +54,7 @@ public class principal extends AppCompatActivity {
                 Start();
             }
         });
+        mapa=false;
     }
 
     /*
@@ -76,6 +78,42 @@ public class principal extends AppCompatActivity {
 
         startActivity(animal_activity);
     }
+
+    public boolean onTouchEvent(MotionEvent event) {
+
+        int action = event.getAction();
+
+        switch(action){
+            case MotionEvent.ACTION_UP:
+
+                if ( mapa==true){
+
+                    Intent animal_activity = new Intent(this, Mapa.class);
+                    startActivity(animal_activity);
+
+                }
+                break;
+
+            case MotionEvent.ACTION_DOWN:
+
+
+                break;
+
+
+        }
+
+
+        if (event.getPointerCount() >=2){
+
+            mapa=true;
+        }
+
+
+        return false;
+    }
+
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -250,6 +288,13 @@ public class principal extends AppCompatActivity {
         Intent telegram = new Intent(Intent.ACTION_VIEW , Uri.parse("https://www.youtube.com/playlist?list=PLd4iYJozvaoP7p5lAcuQG_0ax6axqWv_6&app=desktop"));
         startActivity(telegram);
 
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapa=false;
     }
 
 }

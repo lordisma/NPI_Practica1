@@ -1,7 +1,6 @@
 package ismael.t.npi.myapplication;
 
 import android.Manifest;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +18,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import ai.api.AIDataService;
 import ai.api.AIListener;
 import ai.api.AIServiceException;
-import ai.api.RequestExtras;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
 import ai.api.model.AIError;
@@ -68,6 +67,8 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     private AIRequest mensaje_dialog;
     private AIDataService datos;
+    public  boolean mapa =false;
+
 
 
     @Override
@@ -81,7 +82,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
         animalView = (ImageView) findViewById(R.id.animalimagen);
         friendship = (ImageView) findViewById(R.id.friendship);
-        peculiarity = (ImageView) findViewById(R.id.peculiarity);
+        peculiarity = (ImageView) findViewById(R.id.mapa1);
         speak = (FloatingActionButton) findViewById(R.id.followTalk);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -142,7 +143,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
         sensorManager.registerListener( this,proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener( this,acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
-
+        mapa=false;
     }
 
     @Override
@@ -162,6 +163,42 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             aiService.startListening();
         }
     }
+
+    public boolean onTouchEvent(MotionEvent event) {
+
+        int action = event.getAction();
+
+        switch(action){
+            case MotionEvent.ACTION_UP:
+
+                if ( mapa==true){
+
+                    Intent animal_activity = new Intent(this, Mapa.class);
+                    startActivity(animal_activity);
+
+                }
+                break;
+
+            case MotionEvent.ACTION_DOWN:
+
+
+                break;
+
+
+        }
+
+
+        if (event.getPointerCount() >=2){
+
+            mapa=true;
+        }
+
+
+        return false;
+    }
+
+
+
 
     @Override
     public void onResult(AIResponse response) {
@@ -499,6 +536,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         sensorManager.unregisterListener(this);
         if (speaker.isSpeaking())
             speaker.stop();
+        mapa=false;
     }
 
     @Override
