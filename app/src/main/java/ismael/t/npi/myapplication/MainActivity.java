@@ -1,6 +1,7 @@
 package ismael.t.npi.myapplication;
 
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
      LinearLayout logolayaout, forest;
      ImageView logoimg;
      Animation uptodown,downtoup;
+     CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,15 @@ public class MainActivity extends AppCompatActivity {
         //Cambiar la barra de estado a transparente
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+        timer = new CountDownTimer(2000, 10000) {
+            @Override
+            public void onTick(long l) { }
+
+            public void onFinish() { Start(); }
+        };
+
+        timer.start();
     }
 
     protected void Start(){

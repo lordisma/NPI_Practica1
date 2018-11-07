@@ -23,9 +23,9 @@ public class Mapa extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapa);
 
-        fotomapa = findViewById(R.id.mapa1);
+        fotomapa = findViewById(R.id.mapa);
         fotomapa.setImageResource(R.drawable.mapa);
-         mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+        mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
     }
 

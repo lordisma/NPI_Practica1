@@ -1,6 +1,8 @@
 package ismael.t.npi.myapplication;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -45,17 +47,18 @@ import pl.droidsonroids.gif.GifImageView;
 public class AnimalDetails extends AppCompatActivity implements View.OnClickListener , AIListener ,SensorEventListener{
 
     // Elementos de la UI
-    ImageView animalView, friendship, peculiarity;
+    ImageView animalView, animalTags;
     TextView info;
     FloatingActionButton speak;
     GifImageView gif;
     private TextView informacion;
+    private boolean ampliation ;
+    private Animal currentAnimal;
+    private String Animal_activo;
 
     // Variables para la inicializacion de los servicios de Dialog
     private AIService aiService;
     private TextToSpeech speaker;
-    private String Animal_activo;
-    private int animal_vista=0;
 
     // Sensores
     private SensorManager sensorManager;
@@ -63,11 +66,15 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     private Sensor acelerometeSensor;
 
     private long proximityStap = 0, accelerometeStap = 0;
-    private long Limite=2500;
+    private long Limite=1500;
 
+    // Dialog
     private AIRequest mensaje_dialog;
     private AIDataService datos;
+
+    // Mapa
     public  boolean mapa =false;
+
 
 
 
@@ -76,34 +83,64 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_animal_details);
 
+        ampliation = true;
+        mapa=false;
+
         //Cambiar la barra de estado a transparente
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         animalView = (ImageView) findViewById(R.id.animalimagen);
-        friendship = (ImageView) findViewById(R.id.friendship);
-        peculiarity = (ImageView) findViewById(R.id.mapa1);
+        animalTags = (ImageView) findViewById(R.id.etiquetas);
         speak = (FloatingActionButton) findViewById(R.id.followTalk);
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        acelerometeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        gif = ( GifImageView ) findViewById(R.id.gifImageView);
+        informacion = (TextView) findViewById (R.id.info);
+
+        gif.setImageResource(R.drawable.ajolotegif);
 
         //Introducir nuevos valores atravez del Bundle
         Bundle b = getIntent().getExtras();
         final ArrayList<String> palabra = b.getStringArrayList("key");
 
-        int resID_1 = getResources().getIdentifier(palabra.get(0),
-                "drawable", getPackageName());
+        ChangeAnimal(new Animal(palabra, Integer.parseInt(palabra.get(4))));
 
-        int resID_2 = getResources().getIdentifier(palabra.get(1),
-                "drawable", getPackageName());
+        //Inicializacion de Dialog y el TextToSpeech
+        if (palabra.get(3) != null) {
+            AInitializer(palabra.get(3));
+        }else{
+            Toast.makeText(this,"Un error ha ocurrido con DialogFlow", Toast.LENGTH_LONG);
+            finish();
+        }
 
+        //Inicializamos los Sensores
+        SensorInitializer();
 
-        animalView.setImageResource( resID_1);
+        //Animacion de la imagen principal
+        animalView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AnimaImagen(view);
+            }
+        });
+    }
 
-        informacion=findViewById (R.id.info);
-        informacion.setText(palabra.get(2));
+    ////////////////////////PRIVADOS/////////////////////////////////
 
+    private void SensorInitializer(){
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        acelerometeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
+        if(proximitySensor == null || acelerometeSensor == null) {
+            Toast.makeText(this, "Error no tiene sensor de proximidad o el acelerometro", Toast.LENGTH_SHORT).show();
+            finish(); // Close app
+        }
+
+        sensorManager.registerListener( this,proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener( this,acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    private void AInitializer(final String palabraBundle){
         //Inicializacion de las funciones del text to speech y Dialog
         final AIConfiguration config = new AIConfiguration("23e6b35921f14ffeac0dfd9724403d75",
                 AIConfiguration.SupportedLanguages.Spanish,
@@ -113,39 +150,180 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         aiService.setListener(this);
         mensaje_dialog = new AIRequest();
 
-
-        gif = (GifImageView ) findViewById(R.id.gifImageView);
-        gif.setImageResource(R.drawable.ajolotegif);
-
-
         speaker = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 speaker.setPitch(2);
                 speaker.setSpeechRate(2);
-                if (palabra.get(3) !=null) {
-                    speaker.speak(palabra.get(3), TextToSpeech.QUEUE_ADD, null, null);
-                }
+                speaker.speak(palabraBundle, TextToSpeech.QUEUE_ADD, null, null);
+
             }
         });
 
         speak.setOnClickListener(this);
-
-        if(proximitySensor == null) {
-            Toast.makeText(this, "Error no tiene sensor de proximidad", Toast.LENGTH_SHORT).show();
-            finish(); // Close app
-        }
-
-        if(acelerometeSensor == null) {
-            Toast.makeText(this, "Error no tiene sensor de acelerometro", Toast.LENGTH_SHORT).show();
-            finish(); // Close app
-        }
-
-        sensorManager.registerListener( this,proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener( this,acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
-        mapa=false;
-        animal_vista=Integer.parseInt( palabra.get(4));
     }
+
+    private void AnimaImagen(View view){
+        ObjectAnimator scaleDownY,moveDownY;
+        AnimatorSet scaleDown = new AnimatorSet();
+
+        if(ampliation) {
+            moveDownY = ObjectAnimator.ofFloat(view, "translationY", 115f);
+            scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 1.5f);
+            moveDownY.setDuration(100);
+            scaleDownY.setDuration(100);
+            scaleDown.play(scaleDownY).with(moveDownY);
+            ampliation = false;
+        }else{
+            moveDownY = ObjectAnimator.ofFloat(view, "translationY", 0f);
+            scaleDownY = ObjectAnimator.ofFloat(view, "scaleY", 1.0f);
+            moveDownY.setDuration(100);
+            scaleDownY.setDuration(100);
+            scaleDown.play(scaleDownY).with(moveDownY);
+            ampliation = true;
+        }
+
+        scaleDown.start();
+    }
+
+    private void ModifyAnimal(String animal){
+
+        switch ( animal){
+            case "lemur":
+
+                ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                    add("lemur");
+                    add("lemuretiquetas");
+                    add("Es un primate de hábitos estrictamente diurnos que pasa la mayor parte del tiempo en los árboles," +
+                            " aunque también frecuenta el suelo. Es sociable y vive en grupos de 5 a 25 individuos. " +
+                            "Es polígamo y usa su característica cola para hacer señales visuales y odoríferas. Cuando " +
+                            "camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. " +
+                            "También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se " +
+                            "alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");   }}
+                        , 1)
+                );
+
+                break;
+
+            case "nutria":
+
+                ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                    add("nutria");
+                    add("nutriaetiquetas");
+                    add(    " Es un animal muy sociable que vive en grupos familiares. Es monógama. Dedica gran parte del día a jugar y comunicarse entre ellas." +
+                            " Se han identificado hasta doce vocalizaciones diferentes además de señales visuales, hormonales y táctiles, como el acicalamiento" +
+                            " social. Tiene gran agilidad en sus manos que las utiliza para cazar cangrejos, moluscos y peces por el tacto, levantar piedras o" +
+                            " construir madrigueras en las orillas de los ríos." );   }}
+                        , 2)
+                );
+                break;
+
+            case "anguila jardinera":
+
+                ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                    add("anguila");
+                    add("angilaetiquetas");
+                    add(    " Pez anguiliforme sin escamas. Vive semienterrado en la arena del arrecife formando colonias donde se esconde a la mínima señal de peligro." +
+                            " Es pacífico y tímido. Se alimenta de zooplancton. Las larvas son planctónicos hasta que alcanzan el tamaño suficiente" +
+                            " para hacer su madriguera");   }}
+                        , 3)
+                );
+                break;
+
+            case "ajolote":
+
+                ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                    add("ajolote");
+                    add("ajoloteetiquetas");
+                    add(    " Salamandra endémica de algunas lagunas mejicanas. Su desarrollo es muy peculiar ya que alcanza el estado adulto sin terminar la" +
+                            " metamorfosis, es decir, mantiene la forma larvaria durante toda su vida. Tiene hábitos nocturnos. Se alimenta de invertebrados.");   }}
+                        , 4)
+                );
+                break;
+            case "rana cornuda":
+
+                ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                    add("ranacornuda");
+                    add("ranacornudaetiquetas");
+                    add(    " Rana robusta que se oculta entre las hojas muertas del suelo de los bosques húmedos utilizando su coloración críptica y apariencia de hoja." +
+                            " Sus ataques son explosivos. Salta sobre la presa y de inmediato la captura y engulle. Es muy voraz. Captura insectos y arácnidos.");   }}
+                        , 5)
+                );
+                break;
+
+            case "muntjac":
+
+                ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                    add("muntjac");
+                    add("muntjacetiquetas");
+                    add(    " Pequeño ciervo de bosque que se mueve con agilidad entre la espesura de la jungla. El macho posee una pequeña cornamenta y colmillos que" +
+                            " sobresalen del maxilar superior y la hembra una protuberancia con un mechón de pelo. Es de hábitos solitarios. " +
+                            " Come hojas, frutas y pequeños animales.");   }}
+                        , 0)
+                );
+                break;
+        }
+
+
+    }
+
+    ///////////////////////PROTECTED////////////////////////////////
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        gif.setImageResource(R.drawable.ajolotegif);
+        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+        if (speaker.isSpeaking())
+            speaker.stop();
+        mapa=false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Codigo cancelado", Toast.LENGTH_SHORT).show();
+            } else {
+
+                ModifyAnimal(result.getContents());
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+
+        }
+    }
+
+    protected void UpdateAnimal(){
+        int resID_1 = getResources().getIdentifier(currentAnimal.getName(),
+                "drawable", getPackageName());
+        int resID_2 = getResources().getIdentifier(currentAnimal.getImage(),
+                "drawable", getPackageName());
+
+
+        animalView.setImageResource( resID_1 );
+        animalTags.setImageResource( resID_2 );
+
+        informacion.setText(currentAnimal.getInfo());
+
+    }
+
+    protected void ChangeAnimal(Animal newAnimal){
+        currentAnimal.Copy(newAnimal);
+        UpdateAnimal();
+        CambioAnimal(currentAnimal.getName());
+    }
+
+    ////////////////////////////PUBLICOS////////////////////////////////////////
 
     @Override
     public void onClick(View view) {
@@ -174,8 +352,8 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
                 if ( mapa==true){
 
-                    Intent animal_activity = new Intent(this, Mapa.class);
-                    startActivity(animal_activity);
+                    Intent map_activity = new Intent(this, Mapa.class);
+                    startActivity(map_activity);
 
                 }
                 break;
@@ -198,82 +376,13 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         return false;
     }
 
-
-
-
     @Override
     public void onResult(AIResponse response) {
         Result result = response.getResult();
 
-
         Animal_activo=response.getResult().getStringParameter("Type_of_animal");
-
-
-        switch ( Animal_activo){
-            case "lemur":
-
-                Lemur_llamar_chatbox();
-
-                break;
-
-            case "nutria":
-
-                Nutria_llamar_chatbox();
-                break;
-
-            case "anguila jardinera":
-
-                Anguila_llamar_chatbox();
-                break;
-
-            case "ajolote":
-
-                Ajolote_llamar_chatbox();
-                break;
-            case "rana cornuda":
-
-                Rana_cornuda_llamar_chatbox();
-                break;
-
-            case "muntjac":
-
-                Mutjac_llamar_chatbox();
-                break;
-        }
-
-
-
+        ModifyAnimal(Animal_activo);
         speaker.speak(result.getFulfillment().getSpeech(), TextToSpeech.QUEUE_FLUSH, null, null);
-
-
-
-
-    }
-
-
-
-    @Override
-    public void onError(AIError error) {
-
-    }
-
-    @Override
-    public void onAudioLevel(float level) {
-
-    }
-
-    @Override
-    public void onListeningStarted() {
-
-    }
-
-    @Override
-    public void onListeningCanceled() {
-
-    }
-
-    @Override
-    public void onListeningFinished() {
 
     }
 
@@ -296,103 +405,6 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         }
     }
 
-
-
-    public void Lemur_llamar_chatbox() {
-
-
-        int resID_1 = getResources().getIdentifier("lemur",
-                "drawable", getPackageName());
-
-
-        animalView.setImageResource( resID_1);
-
-        informacion.setText("Es un primate de hábitos estrictamente diurnos que pasa la mayor parte del tiempo en los árboles, aunque también frecuenta el suelo. Es sociable y vive en grupos de 5 a 25 individuos. Es polígamo y usa su característica cola para hacer señales visuales y odoríferas. Cuando camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");
-
-
-
-
-    }
-
-
-
-
-    public void Nutria_llamar_chatbox() {
-
-
-        int resID_1 = getResources().getIdentifier("nutria",
-                "drawable", getPackageName());
-
-
-        animalView.setImageResource( resID_1);
-
-
-        informacion.setText("Es un animal muy sociable que vive en grupos familiares. Es monógama. Dedica gran parte del día a jugar y comunicarse entre ellas. Se han identificado hasta doce vocalizaciones diferentes además de señales visuales, hormonales y táctiles, como el acicalamiento social. Tiene gran agilidad en sus manos que las utiliza para cazar cangrejos, moluscos y peces por el tacto, levantar piedras o construir madrigueras en las orillas de los ríos.");
-
-
-    }
-
-
-
-    public void Anguila_llamar_chatbox() {
-
-
-        int resID_1 = getResources().getIdentifier("anguila",
-                "drawable", getPackageName());
-
-
-        animalView.setImageResource( resID_1);
-
-
-
-        informacion.setText("Pez anguiliforme sin escamas. Vive semienterrado en la arena del arrecife formando colonias donde se esconde a la mínima señal de peligro. Es pacífico y tímido. Se alimenta de zooplancton. Las larvas son planctónicos hasta que alcanzan el tamaño suficiente para hacer su madriguera");
-
-    }
-
-
-
-
-    public void Ajolote_llamar_chatbox() {
-
-
-        int resID_1 = getResources().getIdentifier("ajolote",
-                "drawable", getPackageName());
-
-
-        animalView.setImageResource( resID_1);
-
-        informacion.setText("Salamandra endémica de algunas lagunas mejicanas. Su desarrollo es muy peculiar ya que alcanza el estado adulto sin terminar la metamorfosis, es decir, mantiene la forma larvaria durante toda su vida. Tiene hábitos nocturnos. Se alimenta de invertebrados.");
-
-    }
-
-
-
-    public void Rana_cornuda_llamar_chatbox( ) {
-        int resID_1 = getResources().getIdentifier("ranacornuda",
-                "drawable", getPackageName());
-
-
-        animalView.setImageResource( resID_1);
-
-        informacion.setText("Rana robusta que se oculta entre las hojas muertas del suelo de los bosques húmedos utilizando su coloración críptica y apariencia de hoja. Sus ataques son explosivos. Salta sobre la presa y de inmediato la captura y engulle. Es muy voraz. Captura insectos y arácnidos.");
-
-    }
-
-
-
-    public void Mutjac_llamar_chatbox( ) {
-        int resID_1 = getResources().getIdentifier("muntjac",
-                "drawable", getPackageName());
-
-
-        animalView.setImageResource( resID_1);
-
-        informacion.setText("Pequeño ciervo de bosque que se mueve con agilidad entre la espesura de la jungla. El macho posee una pequeña cornamenta y colmillos que sobresalen del maxilar superior y la hembra una protuberancia con un mechón de pelo. Es de hábitos solitarios. Come hojas, frutas y pequeños animales.");
-
-
-    }
-
-
     @Override
     public void onSensorChanged(SensorEvent event) {
 
@@ -406,8 +418,6 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     }
 
-
-
     public void AccelerometeChanged(SensorEvent event){
         long now = System.currentTimeMillis();
 
@@ -415,12 +425,12 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             accelerometeStap = now;
 
 
-            if (event.values[0] > 10 ||
-                event.values[1] > 10 ||
-                event.values[2] > 10||
-                event.values[0] < -10 ||
-                event.values[1] < -10 ||
-                event.values[2] < -10){
+            if (event.values[0] > 15 ||
+                event.values[1] > 15 ||
+                event.values[2] > 15||
+                event.values[0] < -15 ||
+                event.values[1] < -15 ||
+                event.values[2] < -15){
 
                 IntentIntegrator integrator = new IntentIntegrator(this);
                 integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
@@ -435,7 +445,6 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
 
     }
-
 
     public  void CambioAnimal(String animal){
 
@@ -462,55 +471,92 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     }
 
-
     public void ProximityChanged(SensorEvent event){
         long now = System.currentTimeMillis();
         if((now - proximityStap) >Limite) {
             if (event.values[0] < proximitySensor.getMaximumRange()) {
 
-                switch (animal_vista){
+                switch (currentAnimal.getId()){
                     case 0:
 
-                        Lemur_llamar_chatbox();
-                        CambioAnimal("lemur");
-
+                        ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                                        add("lemur");
+                                        add("lemuretiquetas");
+                                        add("Es un primate de hábitos estrictamente diurnos que pasa la mayor parte del tiempo en los árboles," +
+                                        " aunque también frecuenta el suelo. Es sociable y vive en grupos de 5 a 25 individuos. " +
+                                        "Es polígamo y usa su característica cola para hacer señales visuales y odoríferas. Cuando " +
+                                        "camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. " +
+                                        "También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se " +
+                                        "alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");   }}
+                                        , 1)
+                                    );
                         break;
                    case 1:
-
-                        Nutria_llamar_chatbox();
-                        CambioAnimal("nutrias");
+                       ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                           add("nutria");
+                           add("nutriaetiquetas");
+                           add(    " Es un animal muy sociable que vive en grupos familiares. Es monógama. Dedica gran parte del día a jugar y comunicarse entre ellas." +
+                                   " Se han identificado hasta doce vocalizaciones diferentes además de señales visuales, hormonales y táctiles, como el acicalamiento" +
+                                   " social. Tiene gran agilidad en sus manos que las utiliza para cazar cangrejos, moluscos y peces por el tacto, levantar piedras o" +
+                                   " construir madrigueras en las orillas de los ríos." );   }}
+                               , 2)
+                       );
                         break;
 
                     case 2:
-
-                        Anguila_llamar_chatbox();
-                        CambioAnimal("anguila jardinera");
+                        ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                            add("anguila");
+                            add("angilaetiquetas");
+                            add(    " Pez anguiliforme sin escamas. Vive semienterrado en la arena del arrecife formando colonias donde se esconde a la mínima señal de peligro." +
+                                    " Es pacífico y tímido. Se alimenta de zooplancton. Las larvas son planctónicos hasta que alcanzan el tamaño suficiente" +
+                                    " para hacer su madriguera");   }}
+                                , 3)
+                        );
                         break;
 
                     case 3:
-
-                        Ajolote_llamar_chatbox();
-                        CambioAnimal("ajolote");
+                        ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                            add("ajolote");
+                            add("ajoloteetiquetas");
+                            add(    " Salamandra endémica de algunas lagunas mejicanas. Su desarrollo es muy peculiar ya que alcanza el estado adulto sin terminar la" +
+                                    " metamorfosis, es decir, mantiene la forma larvaria durante toda su vida. Tiene hábitos nocturnos. Se alimenta de invertebrados.");   }}
+                                , 4)
+                        );
                         break;
                     case 4:
-
-                        Rana_cornuda_llamar_chatbox();
-                        CambioAnimal("rana cornuda");
+                        ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                            add("ranacornuda");
+                            add("ranacornudaetiquetas");
+                            add(    " Rana robusta que se oculta entre las hojas muertas del suelo de los bosques húmedos utilizando su coloración críptica y apariencia de hoja." +
+                                    " Sus ataques son explosivos. Salta sobre la presa y de inmediato la captura y engulle. Es muy voraz. Captura insectos y arácnidos.");   }}
+                                , 5)
+                        );
                         break;
 
                     case 5:
-
-                        Mutjac_llamar_chatbox();
-                        CambioAnimal("muntjac");
+                        ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                            add("muntjac");
+                            add("muntjacetiquetas");
+                            add(    " Pequeño ciervo de bosque que se mueve con agilidad entre la espesura de la jungla. El macho posee una pequeña cornamenta y colmillos que" +
+                                    " sobresalen del maxilar superior y la hembra una protuberancia con un mechón de pelo. Es de hábitos solitarios. " +
+                                    " Come hojas, frutas y pequeños animales.");   }}
+                                , 0)
+                        );
                         break;
+
+                        default:
+                            ChangeAnimal(  new Animal(   new ArrayList<String>() {{
+                                add("lemur");
+                                add("lemuretiquetas");
+                                add("Es un primate de hábitos estrictamente diurnos que pasa la mayor parte del tiempo en los árboles," +
+                                        " aunque también frecuenta el suelo. Es sociable y vive en grupos de 5 a 25 individuos. " +
+                                        "Es polígamo y usa su característica cola para hacer señales visuales y odoríferas. Cuando " +
+                                        "camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. " +
+                                        "También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se " +
+                                        "alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");   }}
+                                    , 1)
+                            );
                 }
-                animal_vista+=1;
-
-                if (animal_vista==6){
-                    animal_vista=0;
-                }
-
-
 
             }
             proximityStap=now;
@@ -518,83 +564,18 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
+////////////////USELESS///////////////////////////
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        gif.setImageResource(R.drawable.ajolotegif);
-        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
+    public void onError(AIError error) {}
     @Override
-    protected void onPause() {
-        super.onPause();
-        sensorManager.unregisterListener(this);
-        if (speaker.isSpeaking())
-            speaker.stop();
-        mapa=false;
-    }
-
+    public void onAudioLevel(float level) {}
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
-        if (result != null) {
-            if (result.getContents() == null) {
-                Toast.makeText(this, "Codigo cancelado", Toast.LENGTH_SHORT).show();
-            } else {
-
-                switch ( result.getContents()){
-                    case "lemur":
-
-                        Lemur_llamar_chatbox();
-                        animal_vista=0;
-                        CambioAnimal("lemur");
-                        break;
-
-                    case "nutria":
-
-                        Nutria_llamar_chatbox();
-                        CambioAnimal("nutrias");
-                        animal_vista=1;
-                        break;
-
-                    case "anguila jardinera":
-
-                        Anguila_llamar_chatbox();
-                        animal_vista=2;
-                        CambioAnimal("anguila jardinera");
-                        break;
-
-                    case "ajolote":
-
-                        Ajolote_llamar_chatbox();
-                        CambioAnimal("ajolote");
-                        animal_vista=3;
-                        break;
-                    case "rana cornuda":
-
-                        Rana_cornuda_llamar_chatbox();
-                        CambioAnimal("rana cornuda");
-                        animal_vista=4;
-                        break;
-
-                    case "muntjac":
-
-                        Mutjac_llamar_chatbox();
-                        CambioAnimal("muntjac");
-                        animal_vista=5;
-                        break;
-                }
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-
-        }
-    }
+    public void onListeningStarted() {}
+    @Override
+    public void onListeningCanceled() {}
+    @Override
+    public void onListeningFinished() {}
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 }

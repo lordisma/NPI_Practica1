@@ -8,82 +8,87 @@
     tools:context=".AnimalDetails">
 
     <ImageView
-        android:id="@+id/mapa1"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/cerclebackgroundyell"
-        app:layout_constraintStart_toEndOf="@+id/friendship"
-        app:layout_constraintTop_toBottomOf="@+id/animalimagen"
-        app:srcCompat="@drawable/ic_intelligent" />
-
-    <ImageView
         android:id="@+id/animalimagen"
         android:layout_width="0dp"
-        android:layout_height="161dp"
+        android:layout_height="146dp"
         android:scaleType="centerCrop"
+        android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/nutria" />
 
-    <ImageView
-        android:id="@+id/friendship"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/cerclebackgroundyell"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/animalimagen"
-        app:srcCompat="@drawable/ic_friendly" />
-
-    <TextView
-        android:id="@+id/info"
+    <ScrollView
         android:layout_width="0dp"
-        android:layout_height="226dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="20dp"
-        android:text="Los lutrinos , conocidos comúnmente como nutrias, son una subfamilia de mamíferos carnívoros de la gran familia Mustelidae. Existen 13 especies de nutrias repartidas en 7 géneros,1​ con una distribución de la población prácticamente mundial. En América del Sur es común que se llame «nutria» a otro animal, el coipo o quiyá , de costumbres predominantemente acuáticas, pero es un roedor de la familia de los miocastóridos."
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapa1" />
-
-
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/gifImageView"
-        android:layout_width="153dp"
-        android:layout_height="131dp"
-        android:layout_marginStart="28dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ajolotegif"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/info"
-        app:layout_constraintVertical_bias="1.0" />
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/followTalk"
-        style="@style/Widget.Design.FloatingActionButton"
-        android:layout_width="57dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="24dp"
         android:layout_marginEnd="8dp"
-        android:clickable="true"
-        app:backgroundTint="@color/colorPrimaryDark"
-        app:elevation="15dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.32"
-        app:layout_constraintStart_toEndOf="@+id/gifImageView"
-        app:layout_constraintTop_toBottomOf="@+id/info"
-        app:layout_constraintVertical_bias="0.376"
-        app:srcCompat="@drawable/ic_mic_black_24dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/animalimagen">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/info"
+                android:layout_width="318dp"
+                android:layout_height="186dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="20dp"
+                android:text="Es un animal muy sociable que vive en grupos familiares. Es monógama. Dedica gran parte del día a jugar y comunicarse entre ellas. Se han identificado hasta doce vocalizaciones diferentes además de señales visuales, hormonales y táctiles, como el acicalamiento social. Tiene gran agilidad en sus manos que las utiliza para cazar cangrejos, moluscos y peces por el tacto, levantar piedras o construir madrigueras en las orillas de los ríos."
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etiquetas" />
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gifImageView"
+                android:layout_width="123dp"
+                android:layout_height="107dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ajolotegif"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/info" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/followTalk"
+                style="@style/Widget.Design.FloatingActionButton"
+                android:layout_width="57dp"
+                android:layout_height="58dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                app:backgroundTint="@color/colorPrimaryDark"
+                app:elevation="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.32"
+                app:layout_constraintStart_toEndOf="@+id/gifImageView"
+                app:layout_constraintTop_toBottomOf="@+id/info"
+                app:layout_constraintVertical_bias="0.376"
+                app:srcCompat="@drawable/ic_mic_black_24dp" />
+
+            <ImageView
+                android:id="@+id/etiquetas"
+                android:layout_width="379dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/nutriaetiquetas" />
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 
 
 </android.support.constraint.ConstraintLayout>
