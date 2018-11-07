@@ -1,0 +1,49 @@
+   
+cambiar los 2 ontouchEvent(de principal y animalDetails) por esto:
+------------------------
+   public boolean dispatchTouchEvent(MotionEvent event) {
+
+        int action = event.getAction();
+
+
+
+        if (event.getPointerCount() >=2){
+
+            mapa=true;
+        }
+
+        if (action== MotionEvent.ACTION_UP) {
+
+            if (mapa == true) {
+
+                Intent animal_activity = new Intent(this, Mapa.class);
+                startActivity(animal_activity);
+
+                return true;
+
+            }
+            return super.dispatchTouchEvent(event);
+
+        }
+        else{
+            return  super.dispatchTouchEvent(event);
+
+        }
+
+
+
+    }
+--------------------
+En el XML del mapa pon cambia la imagenView
+
+
+<ImageView
+    android:id="@+id/mapa1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:adjustViewBounds="true"
+    android:scaleType="fitXY"
+    app:layout_constraintStart_toEndOf="@+id/friendship"
+    app:layout_constraintTop_toBottomOf="@+id/animalimagen"
+    />
+
