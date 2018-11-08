@@ -102,7 +102,9 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         Bundle b = getIntent().getExtras();
         final ArrayList<String> palabra = b.getStringArrayList("key");
 
-        ChangeAnimal(new Animal(palabra, Integer.parseInt(palabra.get(4))));
+        currentAnimal = new Animal(palabra, Integer.parseInt(palabra.get(4)));
+        UpdateAnimal();
+       // CambioAnimal(currentAnimal.getName());
 
         //Inicializacion de Dialog y el TextToSpeech
         if (palabra.get(3) != null) {

@@ -13,14 +13,15 @@
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:orientation="vertical">
+
         <ImageView
             android:id="@+id/imagenlogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="167dp"
+            android:layout_height="196dp"
             android:layout_gravity="center"
             android:layout_marginTop="150dp"
             android:clickable="true"
-            android:background="@drawable/ic_launcher_foreground"/>
+            app:srcCompat="@mipmap/ic_biolayer" />
     </LinearLayout>
     
     <LinearLayout

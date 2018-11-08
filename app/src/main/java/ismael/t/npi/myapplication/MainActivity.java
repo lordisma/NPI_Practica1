@@ -53,11 +53,22 @@ public class MainActivity extends AppCompatActivity {
             public void onFinish() { Start(); }
         };
 
-        timer.start();
     }
 
     protected void Start(){
         Intent prin_activity = new Intent(this, principal.class);
         startActivity(prin_activity);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        timer.start();
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        timer.cancel();
     }
 }
