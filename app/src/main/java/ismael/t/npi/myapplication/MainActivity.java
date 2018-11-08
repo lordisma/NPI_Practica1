@@ -29,14 +29,6 @@ public class MainActivity extends AppCompatActivity {
         logolayaout = (LinearLayout) findViewById(R.id.logologin);
         forest = (LinearLayout) findViewById(R.id.forestlogin);
 
-        logoimg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Start();
-
-            }
-        });
-
         uptodown = AnimationUtils.loadAnimation(this, R.anim.uptodown);
         downtoup = AnimationUtils.loadAnimation(this,R.anim.downtoup);
         logolayaout.setAnimation(uptodown);
@@ -46,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
-        timer = new CountDownTimer(2000, 10000) {
+        timer = new CountDownTimer(1600, 10000) {
             @Override
             public void onTick(long l) { }
 
