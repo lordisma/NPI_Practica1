@@ -1,3 +1,0 @@
-mejorar pantalla botones
-boton de atras y aviso de tiempo
-guardar estado al salir de chat
