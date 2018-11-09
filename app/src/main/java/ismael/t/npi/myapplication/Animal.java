@@ -8,12 +8,20 @@ public class Animal {
     private String info;
     private int id;
 
+    /**
+     * @brief Constructor por defecto del Animal
+    */
+
     public Animal(){
         name = ""; //Animal por defecto
         image = "";
         info  = "";
         id = 0;
     }
+
+    /**
+     * @brief Constructor que inicializa los campos del animal
+     */
 
     public Animal(ArrayList<String> values, int identificador){
         if (!values.isEmpty()){
@@ -24,11 +32,19 @@ public class Animal {
         }
     }
 
+    /**
+     * @brief Conjunto de gets para los diferentes campos
+     */
+
     public String getName() { return name;  }
     public String getImage(){ return image; }
     public String getInfo() { return info;  }
     public String getTag()  { return name;  }
     public  int   getId ()  { return id;    }
+
+    /**
+     * @brief Funcion para copiar un animal en otro
+     */
 
     public void Copy(Animal animal){
         name = animal.getName();

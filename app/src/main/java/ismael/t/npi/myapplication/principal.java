@@ -41,6 +41,7 @@ public class principal extends AppCompatActivity {
      * @brief En el metodo onCreate inicializamor el lector QR
               y el speaker para el uso de estos con las
      *        funcionalidades de DialogFlow y ZXING
+     * @param savedInstanceState información para crear la actividad
      *
      */
 
@@ -345,7 +346,7 @@ public class principal extends AppCompatActivity {
     }
 
     /**
-     * @brief Función al pasar a segundo plano la aplicación
+     * @brief Función del segundo plano de la aplicación
      */
     @Override
     protected void onPause() {

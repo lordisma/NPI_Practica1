@@ -76,7 +76,11 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     public  boolean mapa =false;
 
 
-
+    /**
+     * @brief Creación de la actividad
+     * @param savedInstanceState información para crear la actividad
+     * @return
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +131,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     ////////////////////////PRIVADOS/////////////////////////////////
 
+    /**
+     * @brief Función para inicializar los sensores que controlamos
+     */
+
     private void SensorInitializer(){
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -140,6 +148,12 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         sensorManager.registerListener( this,proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener( this,acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
+
+    /**
+     * @brief Fución que inicializa el dialogflow y el texttospeak
+     * @param palabraBundle Frase inicial del texttospeak
+     * @return
+     */
 
     private void AInitializer(final String palabraBundle){
         //Inicializacion de las funciones del text to speech y Dialog
@@ -161,15 +175,15 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             }
         });
 
-
         gif.setOnClickListener(this);
     }
 
     /**
-     * @brief Que hace
+     * @brief Fución que gestiona la animación de la vista
      * @param view vista
      * @return
      */
+
     private void AnimaImagen(View view){
         ObjectAnimator scaleDownY,moveDownY;
         AnimatorSet scaleDown = new AnimatorSet();
@@ -192,6 +206,13 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
         scaleDown.start();
     }
+
+    /**
+     * @brief Función que crea un objeto de la clase animal
+     *        y actualiza la actividad junto con el animal activo
+     * @param animal Animal
+     * @return
+     */
 
     private void ModifyAnimal(String animal){
 
@@ -276,6 +297,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     ///////////////////////PROTECTED////////////////////////////////
 
+    /**
+     * @brief Función que reactiva la actividad y los sensores
+     */
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -283,6 +308,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, acelerometeSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
+
+    /**
+     * @brief Función del segundo plano de la aplicación
+     */
 
     @Override
     protected void onPause() {
@@ -292,6 +321,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             speaker.stop();
         mapa=false;
     }
+
+    /**@brief  Función que recoge el contenido del QR (en nuestro caso solo texto) y en caso de
+     *         ser uno de los animales disponibles ejecuta la nueva actividad.
+     */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -310,6 +343,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    /**
+     * @brief Fución que actualiza la vista de la actividad
+     */
+
     protected void UpdateAnimal(){
         int resID_1 = getResources().getIdentifier(currentAnimal.getName(),
                 "drawable", getPackageName());
@@ -324,6 +361,12 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /**
+     * @brief Función que cambia el animal activo y actualiza la vista
+     * @param newAnimal Animal
+     * @return
+     */
+
     protected void ChangeAnimal(Animal newAnimal){
         currentAnimal.Copy(newAnimal);
         UpdateAnimal();
@@ -331,6 +374,13 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     }
 
     ////////////////////////////PUBLICOS////////////////////////////////////////
+
+    /**
+     * @brief Función que se lanza a la hora de hablar la cual chequea los permisos,
+     *        chequear la conexión a internet y en caso de tenerlo
+     *        graba un mensaje de audio y se lo envia dialogflow
+     * @param view vista
+     */
 
     @Override
     public void onClick(View view) {
@@ -349,6 +399,12 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             aiService.startListening();
         }
     }
+
+    /**@brief Método para reconocer los eventos que ocurren en la aplicacion
+     *        en nuestro caso que se pulse con más de 2 dedos la pantalla y se muevan
+     * @param event  evento de entrada
+     * @return true o evento (por si es un evento ontouch)
+     */
 
     public boolean dispatchTouchEvent(MotionEvent event) {
 
@@ -379,9 +435,14 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
         }
 
-
-
     }
+
+    /**
+     * @brief Recibe la respuesta del dialogflow y la reproduce
+     *        en caso de haber cambio de animal actualiza la vista
+     * @param response Respuesta de dialogflow
+     * @return
+     */
 
     @Override
     public void onResult(AIResponse response) {
@@ -393,6 +454,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
     }
 
+    /**
+     * @brief Fución que termina la actividad y apaga el speaker
+     */
+
     @Override
     public void onDestroy() {
         if (speaker.isSpeaking())
@@ -403,6 +468,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         super.onDestroy();
     }
 
+    /**
+     * @brief Fución que chequea el permiso de Audio y en caso de no estar lo pide
+     */
+
     public void ChequearPermisoAudio() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -411,6 +480,11 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
                     22);
         }
     }
+
+    /**
+     * @brief Chequea si el evento es de alguno de los dos tipos que nos interesa
+     * @param event Evento de entrada
+     */
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -424,6 +498,12 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         }
 
     }
+
+    /**
+     * @brief Funcion que gestiona los cambios del acelerometro y en caso de cumplir
+     *        los límites lanza la actividad del QR
+     * @param event acelerometro
+     */
 
     public void AccelerometeChanged(SensorEvent event){
         long now = System.currentTimeMillis();
@@ -439,19 +519,22 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
                 event.values[1] < -15 ||
                 event.values[2] < -15){
 
-                IntentIntegrator integrator = new IntentIntegrator(this);
-                integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-                integrator.setPrompt("Scan");
-                integrator.setCameraId(0);
-                integrator.setBeepEnabled(false);
-                integrator.setBarcodeImageEnabled(false);
-                integrator.initiateScan();
+                    IntentIntegrator integrator = new IntentIntegrator(this);
+                    integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+                    integrator.setPrompt("Scan");
+                    integrator.setCameraId(0);
+                    integrator.setBeepEnabled(false);
+                    integrator.setBarcodeImageEnabled(false);
+                    integrator.initiateScan();
 
             }
         }
 
-
     }
+
+    /**@brief Método para cambiar el contexto del animal en dialogflow
+     * @param animal Animal de contexto que tiene que activar
+     */
 
     public  void CambioAnimal(String animal){
 
@@ -477,6 +560,12 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         }.execute(mensaje_dialog);
 
     }
+
+    /**
+     * @brief Funcion que gestiona los cambios del evento de proximidad y si es necesario
+     *        actualiza la vista
+     * @param event sensor de proximidad
+     */
 
     public void ProximityChanged(SensorEvent event){
         long now = System.currentTimeMillis();
@@ -572,6 +661,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
     }
 
 ////////////////USELESS///////////////////////////
+
+    /**
+     * @brief Funciones que deben de estar por los diferentes implements
+     */
 
     @Override
     public void onError(AIError error) {}

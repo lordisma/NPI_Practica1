@@ -15,11 +15,17 @@ import android.widget.ImageView;
 
 public class Mapa extends AppCompatActivity {
 
+    //Componentes de la vista
     ImageView fotomapa;
 
+    // Componentes del Escalado
     private ScaleGestureDetector mScaleGestureDetector;
     private float mScaleFactor = 1.0f;
 
+    /**
+     * @brief Creamos la actividad y inicializamos la imagen
+     * @param savedInstanceState información para crear la actividad
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,9 +38,21 @@ public class Mapa extends AppCompatActivity {
         fotomapa = findViewById(R.id.mapa);
         fotomapa.setImageResource(R.drawable.mapa);
         mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
-
     }
 
+    /**
+     * @brief Cuando tocamos con 2 dedos la pantalla llama al reescalado
+     */
+
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        mScaleGestureDetector.onTouchEvent(motionEvent);
+        return true;
+    }
+
+    /**
+     * @brief Sub_Clase para proceder al Reescalado de la imgen
+     *        Funcion que se encarga de reescalar la imagen en base a unos límites
+     */
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
@@ -49,9 +67,4 @@ public class Mapa extends AppCompatActivity {
         }
     }
 
-
-    public boolean onTouchEvent(MotionEvent motionEvent) {
-        mScaleGestureDetector.onTouchEvent(motionEvent);
-        return true;
-    }
 }

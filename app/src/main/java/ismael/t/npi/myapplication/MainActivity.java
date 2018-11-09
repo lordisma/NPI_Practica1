@@ -16,15 +16,24 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+     // Componentes de la vista
      LinearLayout logolayaout, forest;
      ImageView logoimg;
      Animation uptodown,downtoup;
      CountDownTimer timer;
 
+    /**
+     * @brief Método que inicializa la primera pantalla de aplición y al pasar el
+              tiempo del timer pasa a la siguiente.
+     @param savedInstanceState información para crear la actividad
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Inicialización de los componentes de la vista y timer
         logoimg = findViewById(R.id.imagenlogo);
         logolayaout = (LinearLayout) findViewById(R.id.logologin);
         forest = (LinearLayout) findViewById(R.id.forestlogin);
@@ -38,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
+        // evento para el cambio de actividad
         timer = new CountDownTimer(1600, 10000) {
             @Override
             public void onTick(long l) { }
@@ -46,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
         };
 
     }
+
+    /**
+     * @brief Funcion que inicializa  la siguiente pantalla
+     */
 
     protected void Start(){
         Intent prin_activity = new Intent(this, principal.class);
