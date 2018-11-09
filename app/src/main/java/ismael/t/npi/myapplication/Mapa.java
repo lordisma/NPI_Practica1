@@ -13,7 +13,7 @@ import android.widget.ImageView;
 
 
 
-public class Mapa extends AppCompatActivity {
+public class Mapa extends AppCompatActivity  implements ScaleGestureDetector.OnScaleGestureListener {
 
     //Componentes de la vista
     ImageView fotomapa;
@@ -46,7 +46,23 @@ public class Mapa extends AppCompatActivity {
 
     public boolean onTouchEvent(MotionEvent motionEvent) {
         mScaleGestureDetector.onTouchEvent(motionEvent);
+
         return true;
+    }
+
+    @Override
+    public boolean onScale(ScaleGestureDetector detector) {
+        return false;
+    }
+
+    @Override
+    public boolean onScaleBegin(ScaleGestureDetector detector) {
+        return false;
+    }
+
+    @Override
+    public void onScaleEnd(ScaleGestureDetector detector) {
+
     }
 
     /**
@@ -58,8 +74,7 @@ public class Mapa extends AppCompatActivity {
         @Override
         public boolean onScale(ScaleGestureDetector scaleGestureDetector){
             mScaleFactor *= scaleGestureDetector.getScaleFactor();
-            mScaleFactor = Math.max(0.1f,
-                    Math.min(mScaleFactor, 10.0f));
+            mScaleFactor = Math.max(0.7f, Math.min(mScaleFactor, 2.0f));
             fotomapa.setScaleX(mScaleFactor);
             fotomapa.setScaleY(mScaleFactor);
 
