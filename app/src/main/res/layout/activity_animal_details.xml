@@ -10,25 +10,28 @@
     <ImageView
         android:id="@+id/animalimagen"
         android:layout_width="0dp"
-        android:layout_height="146dp"
-        android:scaleType="centerCrop"
+        android:layout_height="214dp"
+        android:layout_marginBottom="8dp"
         android:clickable="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/etiquetas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/nutria" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ScrollView
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="326dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/animalimagen">
+        app:layout_constraintTop_toBottomOf="@+id/etiquetas"
+        app:layout_constraintVertical_bias="0.75">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -36,8 +39,8 @@
 
             <TextView
                 android:id="@+id/info"
-                android:layout_width="318dp"
-                android:layout_height="186dp"
+                android:layout_width="346dp"
+                android:layout_height="189dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="20dp"
@@ -45,50 +48,35 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etiquetas" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <pl.droidsonroids.gif.GifImageView
                 android:id="@+id/gifImageView"
-                android:layout_width="123dp"
-                android:layout_height="107dp"
-                android:layout_marginStart="36dp"
-                android:layout_marginTop="8dp"
+                android:layout_width="116dp"
+                android:layout_height="100dp"
+                android:clickable="true"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ajolotegif"
+                app:elevation="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/info" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/followTalk"
-                style="@style/Widget.Design.FloatingActionButton"
-                android:layout_width="57dp"
-                android:layout_height="58dp"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="8dp"
-                android:clickable="true"
-                app:backgroundTint="@color/colorPrimaryDark"
-                app:elevation="15dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.32"
-                app:layout_constraintStart_toEndOf="@+id/gifImageView"
-                app:layout_constraintTop_toBottomOf="@+id/info"
-                app:layout_constraintVertical_bias="0.376"
-                app:srcCompat="@drawable/ic_mic_black_24dp" />
 
-            <ImageView
-                android:id="@+id/etiquetas"
-                android:layout_width="379dp"
-                android:layout_height="80dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/nutriaetiquetas" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
+
+    <ImageView
+        android:id="@+id/etiquetas"
+        android:layout_width="match_parent"
+        android:layout_height="93dp"
+        android:layout_marginTop="5dp"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/animalimagen" />
 
 
 </android.support.constraint.ConstraintLayout>

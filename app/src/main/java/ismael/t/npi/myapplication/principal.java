@@ -95,28 +95,10 @@ public class principal extends AppCompatActivity {
         startActivity(animal_activity);
     }
 
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean dispatchTouchEvent(MotionEvent event) {
 
         int action = event.getAction();
 
-        switch(action){
-            case MotionEvent.ACTION_UP:
-
-                if ( mapa==true){
-
-                    Intent animal_activity = new Intent(this, Mapa.class);
-                    startActivity(animal_activity);
-
-                }
-                break;
-
-            case MotionEvent.ACTION_DOWN:
-
-
-                break;
-
-
-        }
 
 
         if (event.getPointerCount() >=2){
@@ -124,10 +106,27 @@ public class principal extends AppCompatActivity {
             mapa=true;
         }
 
+        if (action== MotionEvent.ACTION_UP) {
 
-        return false;
+            if (mapa == true) {
+
+                Intent animal_activity = new Intent(this, Mapa.class);
+                startActivity(animal_activity);
+
+                return true;
+
+            }
+            return super.dispatchTouchEvent(event);
+
+        }
+        else{
+            return  super.dispatchTouchEvent(event);
+
+        }
+
+
+
     }
-
 
 
 

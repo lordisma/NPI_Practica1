@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 
@@ -22,6 +24,10 @@ public class Mapa extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapa);
+
+        //Cambiar la barra de estado a transparente
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         fotomapa = findViewById(R.id.mapa);
         fotomapa.setImageResource(R.drawable.mapa);

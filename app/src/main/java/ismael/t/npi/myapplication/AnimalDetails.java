@@ -92,7 +92,6 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
 
         animalView = (ImageView) findViewById(R.id.animalimagen);
         animalTags = (ImageView) findViewById(R.id.etiquetas);
-        speak = (FloatingActionButton) findViewById(R.id.followTalk);
         gif = ( GifImageView ) findViewById(R.id.gifImageView);
         informacion = (TextView) findViewById (R.id.info);
 
@@ -162,9 +161,15 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             }
         });
 
-        speak.setOnClickListener(this);
+
+        gif.setOnClickListener(this);
     }
 
+    /**
+     * @brief Que hace
+     * @param view vista
+     * @return
+     */
     private void AnimaImagen(View view){
         ObjectAnimator scaleDownY,moveDownY;
         AnimatorSet scaleDown = new AnimatorSet();
@@ -345,28 +350,10 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean dispatchTouchEvent(MotionEvent event) {
 
         int action = event.getAction();
 
-        switch(action){
-            case MotionEvent.ACTION_UP:
-
-                if ( mapa==true){
-
-                    Intent map_activity = new Intent(this, Mapa.class);
-                    startActivity(map_activity);
-
-                }
-                break;
-
-            case MotionEvent.ACTION_DOWN:
-
-
-                break;
-
-
-        }
 
 
         if (event.getPointerCount() >=2){
@@ -374,8 +361,26 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
             mapa=true;
         }
 
+        if (action== MotionEvent.ACTION_UP) {
 
-        return false;
+            if (mapa == true) {
+
+                Intent animal_activity = new Intent(this, Mapa.class);
+                startActivity(animal_activity);
+
+                return true;
+
+            }
+            return super.dispatchTouchEvent(event);
+
+        }
+        else{
+            return  super.dispatchTouchEvent(event);
+
+        }
+
+
+
     }
 
     @Override
@@ -490,7 +495,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
                                         "camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. " +
                                         "También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se " +
                                         "alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");   }}
-                                        , 1)
+                                        , 2)
                                     );
                         break;
                    case 1:
