@@ -26,21 +26,31 @@ import ai.api.model.AIResponse;
 
 public class principal extends AppCompatActivity {
 
+    // Elementos de la UI
     CardView readerQR, speaker;
+
+    // Variables para el mapa
     public  boolean mapa =false;
+
+    // Variables para la inicializacion de los servicios de Dialog
     private AIRequest mensaje_dialog;
     private AIDataService datos;
-    /*
-     * En el metodo onCreate inicializamor el lector QR
-     * y el speaker para el uso de estos con las
-     * funcionalidades de DialogFlow y ZXING
+
+
+    /**
+     * @brief En el metodo onCreate inicializamor el lector QR
+              y el speaker para el uso de estos con las
+     *        funcionalidades de DialogFlow y ZXING
+     *
      */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
         final Activity activity = this;
 
+        //Declaramos los botones de la interfaz y definimos su funcionalidad
         readerQR = (CardView) findViewById(R.id.readerQR);
         speaker  = (CardView) findViewById(R.id.speaker);
 
@@ -63,6 +73,8 @@ public class principal extends AppCompatActivity {
                 Start();
             }
         });
+
+        // Inicialización del mapa y dialogflow
         mapa=false;
         final AIConfiguration config = new AIConfiguration("23e6b35921f14ffeac0dfd9724403d75",
                 AIConfiguration.SupportedLanguages.Spanish,
@@ -70,14 +82,194 @@ public class principal extends AppCompatActivity {
         datos = new AIDataService( config);
         mensaje_dialog = new AIRequest();
 
+    }
+
+    ////////////////////////////PUBLICOS////////////////////////////////////////
+
+    /**@brief Método para reconocer los eventos que ocurren en la aplicacion
+     *        en nuestro caso que se pulse con más de 2 dedos la pantalla y se muevan
+     * @param event  evento de entrada
+     * @return true o evento (por si es un evento ontouch)
+     */
+
+    public boolean dispatchTouchEvent(MotionEvent event) {
+
+        int action = event.getAction();
+
+        if (event.getPointerCount() >=2){
+            mapa=true;
+        }
+        if (action== MotionEvent.ACTION_UP) {
+
+            if (mapa == true) {
+                Intent animal_activity = new Intent(this, Mapa.class);
+                startActivity(animal_activity);
+                return true;
+            }
+            return super.dispatchTouchEvent(event);
+        }
+        else{
+            return  super.dispatchTouchEvent(event);
+        }
+    }
+
+    /**@brief Método para cambiar el contexto del animal en dialogflow
+     * @param animal Animal de contexto que tiene que activar
+     */
+
+    public  void CambioAnimal(String animal){
+
+        mensaje_dialog.setQuery(animal);
+
+        new AsyncTask<AIRequest, Void, AIResponse>() {
+            @Override
+            protected AIResponse doInBackground(AIRequest... requests) {
+
+                try {
+                    final AIResponse response = datos.request(mensaje_dialog);
+                    return response;
+                } catch (AIServiceException e) {
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(AIResponse aiResponse) {}
+        }.execute(mensaje_dialog);
+    }
+
+    /**@brief Funciones que cargan la informacion de los diferentes animales para la nueva actividad
+     *
+     */
+
+    public void Lemur_llamar_chatbox() {
+
+        Intent animal_activity = new Intent(this, AnimalDetails.class);
+        Bundle b = new Bundle();
+        ArrayList<String> Animal1 = new ArrayList<String>();
+
+        Animal1.add("lemur");
+        Animal1.add("lemuretiquetas");
+        Animal1.add("Es un primate de hábitos estrictamente diurnos que pasa la mayor parte del tiempo en los árboles, aunque también frecuenta el suelo. Es sociable y vive en grupos de 5 a 25 individuos. Es polígamo y usa su característica cola para hacer señales visuales y odoríferas. Cuando camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");
+        Animal1.add("Aqui puedes ver al lemur");
+        Animal1.add("0");
+        b.putStringArrayList("key",Animal1 );
+
+        animal_activity.putExtras(b);
+        startActivity(animal_activity);
 
     }
 
-    /*
-    * Funcion lanzada con el boton de speaker la cual nos lleva a la ventana
-    * de Detalles de los animales e inicializa esta con valores de presentacion
-    * los cuales sirven de tutorial
-    */
+    public void Nutria_llamar_chatbox() {
+
+        Intent animal_activity = new Intent(this, AnimalDetails.class);
+        Bundle b = new Bundle();
+        ArrayList<String> Animal1 = new ArrayList<String>();
+
+        Animal1.add("nutria");
+        Animal1.add("lemuretiquetas");
+        Animal1.add("Es un animal muy sociable que vive en grupos familiares. Es monógama. Dedica gran parte del día a jugar y comunicarse entre ellas. Se han identificado hasta doce vocalizaciones diferentes además de señales visuales, hormonales y táctiles, como el acicalamiento social. Tiene gran agilidad en sus manos que las utiliza para cazar cangrejos, moluscos y peces por el tacto, levantar piedras o construir madrigueras en las orillas de los ríos.");
+        Animal1.add("Aqui puedes ver a la nutria");
+        Animal1.add("1");
+        b.putStringArrayList("key",Animal1 );
+
+        animal_activity.putExtras(b);
+        startActivity(animal_activity);
+    }
+
+    public void Anguila_llamar_chatbox() {
+
+        Intent animal_activity = new Intent(this, AnimalDetails.class);
+        Bundle b = new Bundle();
+        ArrayList<String> Animal1 = new ArrayList<String>();
+
+        Animal1.add("anguila");
+        Animal1.add("lemuretiquetas");
+        Animal1.add("Pez anguiliforme sin escamas. Vive semienterrado en la arena del arrecife formando colonias donde se esconde a la mínima señal de peligro. Es pacífico y tímido. Se alimenta de zooplancton. Las larvas son planctónicos hasta que alcanzan el tamaño suficiente para hacer su madriguera");
+        Animal1.add("Aqui puedes ver a la anguila jardinera");
+        Animal1.add("2");
+        b.putStringArrayList("key",Animal1 );
+
+        animal_activity.putExtras(b);
+        startActivity(animal_activity);
+
+    }
+
+    public void Ajolote_llamar_chatbox() {
+
+        Intent animal_activity = new Intent(this, AnimalDetails.class);
+        Bundle b = new Bundle();
+        ArrayList<String> Animal1 = new ArrayList<String>();
+
+        Animal1.add("ajolote");
+        Animal1.add("lemuretiquetas");
+        Animal1.add("Salamandra endémica de algunas lagunas mejicanas. Su desarrollo es muy peculiar ya que alcanza el estado adulto sin terminar la metamorfosis, es decir, mantiene la forma larvaria durante toda su vida. Tiene hábitos nocturnos. Se alimenta de invertebrados.");
+        Animal1.add("Aqui puedes ver al ajolote");
+        Animal1.add("3");
+        b.putStringArrayList("key",Animal1 );
+
+        animal_activity.putExtras(b);
+        startActivity(animal_activity);
+
+    }
+
+    public void Rana_cornuda_llamar_chatbox( ) {
+
+        Intent animal_activity = new Intent(this, AnimalDetails.class);
+        Bundle b = new Bundle();
+        ArrayList<String> Animal1 = new ArrayList<String>();
+
+        Animal1.add("ranacornuda");
+        Animal1.add("lemuretiquetas");
+        Animal1.add("Rana robusta que se oculta entre las hojas muertas del suelo de los bosques húmedos utilizando su coloración críptica y apariencia de hoja. Sus ataques son explosivos. Salta sobre la presa y de inmediato la captura y engulle. Es muy voraz. Captura insectos y arácnidos.");
+        Animal1.add("Aqui puedes ver a la sorprendente rana cornuda");
+        Animal1.add("4");
+        b.putStringArrayList("key",Animal1 );
+
+        animal_activity.putExtras(b);
+        startActivity(animal_activity);
+
+    }
+
+    public void Mutjac_llamar_chatbox( ) {
+
+        Intent animal_activity = new Intent(this, AnimalDetails.class);
+        Bundle b = new Bundle();
+        ArrayList<String> Animal1 = new ArrayList<String>();
+
+        Animal1.add("muntjac");
+        Animal1.add("lemuretiquetas");
+        Animal1.add("Pequeño ciervo de bosque que se mueve con agilidad entre la espesura de la jungla. El macho posee una pequeña cornamenta y colmillos que sobresalen del maxilar superior y la hembra una protuberancia con un mechón de pelo. Es de hábitos solitarios. Come hojas, frutas y pequeños animales.");
+        Animal1.add("Aqui puedes ver el muntjac tambien conocido como ciervo raton");
+        Animal1.add("5");
+        b.putStringArrayList("key",Animal1 );
+
+        animal_activity.putExtras(b);
+        startActivity(animal_activity);
+    }
+
+    /**@brief Funciones para lanzar los eventos de navegador (telegram y youtube).
+     */
+
+    public  void telegram(View view){
+
+        Intent telegram = new Intent(Intent.ACTION_VIEW , Uri.parse("https://t.me/BiodomoBot"));
+        startActivity(telegram);
+
+    }
+    public  void Videos_informativos(View view){
+
+        Intent telegram = new Intent(Intent.ACTION_VIEW , Uri.parse("https://www.youtube.com/playlist?list=PLd4iYJozvaoP7p5lAcuQG_0ax6axqWv_6&app=desktop"));
+        startActivity(telegram);
+
+    }
+
+    ////////////////////////////PROTECTED////////////////////////////////////////
+
+    /**@brief Funcion lanzada con el boton de speaker la cual nos lleva a la ventana
+              de Detalles de los animales e inicializa esta con valores de presentacion
+              los cuales sirven de tutorial
+     */
+
     protected void Start(){
         Intent animal_activity = new Intent(this, AnimalDetails.class);
         Bundle b = new Bundle();
@@ -95,40 +287,9 @@ public class principal extends AppCompatActivity {
         startActivity(animal_activity);
     }
 
-    public boolean dispatchTouchEvent(MotionEvent event) {
-
-        int action = event.getAction();
-
-
-
-        if (event.getPointerCount() >=2){
-
-            mapa=true;
-        }
-
-        if (action== MotionEvent.ACTION_UP) {
-
-            if (mapa == true) {
-
-                Intent animal_activity = new Intent(this, Mapa.class);
-                startActivity(animal_activity);
-
-                return true;
-
-            }
-            return super.dispatchTouchEvent(event);
-
-        }
-        else{
-            return  super.dispatchTouchEvent(event);
-
-        }
-
-
-
-    }
-
-
+    /**@brief  Función que recoge el contenido del QR (en nuestro caso solo texto) y en caso de
+     *         ser uno de los animales disponibles ejecuta la nueva actividad.
+     */
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -163,18 +324,17 @@ public class principal extends AppCompatActivity {
                         Ajolote_llamar_chatbox();
                         CambioAnimal("ajolote");
                         break;
+
                     case "rana cornuda":
 
                         Rana_cornuda_llamar_chatbox();
                         CambioAnimal("rana cornuda");
-
                         break;
 
                     case "muntjac":
 
                         Mutjac_llamar_chatbox();
                         CambioAnimal("muntjac");
-
                         break;
                 }
             }
@@ -184,167 +344,9 @@ public class principal extends AppCompatActivity {
         }
     }
 
-
-
-    public  void CambioAnimal(String animal){
-
-        mensaje_dialog.setQuery(animal);
-
-        new AsyncTask<AIRequest, Void, AIResponse>() {
-            @Override
-            protected AIResponse doInBackground(AIRequest... requests) {
-
-                try {
-                    final AIResponse response = datos.request(mensaje_dialog);
-                    return response;
-                } catch (AIServiceException e) {
-                }
-                return null;
-            }
-            @Override
-            protected void onPostExecute(AIResponse aiResponse) {
-                if (aiResponse != null) {
-
-                }
-            }
-        }.execute(mensaje_dialog);
-
-    }
-    public void Lemur_llamar_chatbox() {
-
-        Intent animal_activity = new Intent(this, AnimalDetails.class);
-        Bundle b = new Bundle();
-        ArrayList<String> Animal1 = new ArrayList<String>();
-        Animal1.add("lemur");
-        Animal1.add("lemuretiquetas");
-        Animal1.add("Es un primate de hábitos estrictamente diurnos que pasa la mayor parte del tiempo en los árboles, aunque también frecuenta el suelo. Es sociable y vive en grupos de 5 a 25 individuos. Es polígamo y usa su característica cola para hacer señales visuales y odoríferas. Cuando camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");
-        Animal1.add("Aqui puedes ver al lemur");
-        Animal1.add("0");
-        b.putStringArrayList("key",Animal1 );
-        animal_activity.putExtras(b);
-
-
-        startActivity(animal_activity);
-
-
-    }
-
-
-
-
-    public void Nutria_llamar_chatbox() {
-
-
-        Intent animal_activity = new Intent(this, AnimalDetails.class);
-        Bundle b = new Bundle();
-        ArrayList<String> Animal1 = new ArrayList<String>();
-        Animal1.add("nutria");
-        Animal1.add("lemuretiquetas");
-        Animal1.add("Es un animal muy sociable que vive en grupos familiares. Es monógama. Dedica gran parte del día a jugar y comunicarse entre ellas. Se han identificado hasta doce vocalizaciones diferentes además de señales visuales, hormonales y táctiles, como el acicalamiento social. Tiene gran agilidad en sus manos que las utiliza para cazar cangrejos, moluscos y peces por el tacto, levantar piedras o construir madrigueras en las orillas de los ríos.");
-        Animal1.add("Aqui puedes ver a la nutria");
-        Animal1.add("1");
-        b.putStringArrayList("key",Animal1 );
-        animal_activity.putExtras(b);
-
-
-        startActivity(animal_activity);
-
-
-    }
-
-
-
-    public void Anguila_llamar_chatbox() {
-
-
-        Intent animal_activity = new Intent(this, AnimalDetails.class);
-        Bundle b = new Bundle();
-        ArrayList<String> Animal1 = new ArrayList<String>();
-        Animal1.add("anguila");
-        Animal1.add("lemuretiquetas");
-        Animal1.add("Pez anguiliforme sin escamas. Vive semienterrado en la arena del arrecife formando colonias donde se esconde a la mínima señal de peligro. Es pacífico y tímido. Se alimenta de zooplancton. Las larvas son planctónicos hasta que alcanzan el tamaño suficiente para hacer su madriguera");
-        Animal1.add("Aqui puedes ver a la anguila jardinera");
-        Animal1.add("2");
-        b.putStringArrayList("key",Animal1 );
-        animal_activity.putExtras(b);
-
-
-        startActivity(animal_activity);
-
-    }
-
-
-
-
-    public void Ajolote_llamar_chatbox() {
-
-        Intent animal_activity = new Intent(this, AnimalDetails.class);
-        Bundle b = new Bundle();
-        ArrayList<String> Animal1 = new ArrayList<String>();
-        Animal1.add("ajolote");
-        Animal1.add("lemuretiquetas");
-        Animal1.add("Salamandra endémica de algunas lagunas mejicanas. Su desarrollo es muy peculiar ya que alcanza el estado adulto sin terminar la metamorfosis, es decir, mantiene la forma larvaria durante toda su vida. Tiene hábitos nocturnos. Se alimenta de invertebrados.");
-        Animal1.add("Aqui puedes ver al ajolote");
-        Animal1.add("3");
-        b.putStringArrayList("key",Animal1 );
-        animal_activity.putExtras(b);
-
-
-        startActivity(animal_activity);
-
-
-    }
-
-
-
-    public void Rana_cornuda_llamar_chatbox( ) {
-
-        Intent animal_activity = new Intent(this, AnimalDetails.class);
-        Bundle b = new Bundle();
-        ArrayList<String> Animal1 = new ArrayList<String>();
-        Animal1.add("ranacornuda");
-        Animal1.add("lemuretiquetas");
-        Animal1.add("Rana robusta que se oculta entre las hojas muertas del suelo de los bosques húmedos utilizando su coloración críptica y apariencia de hoja. Sus ataques son explosivos. Salta sobre la presa y de inmediato la captura y engulle. Es muy voraz. Captura insectos y arácnidos.");
-        Animal1.add("Aqui puedes ver a la sorprendente rana cornuda");
-        Animal1.add("4");
-        b.putStringArrayList("key",Animal1 );
-        animal_activity.putExtras(b);
-        startActivity(animal_activity);
-
-    }
-
-
-
-    public void Mutjac_llamar_chatbox( ) {
-
-        Intent animal_activity = new Intent(this, AnimalDetails.class);
-        Bundle b = new Bundle();
-        ArrayList<String> Animal1 = new ArrayList<String>();
-        Animal1.add("muntjac");
-        Animal1.add("lemuretiquetas");
-        Animal1.add("Pequeño ciervo de bosque que se mueve con agilidad entre la espesura de la jungla. El macho posee una pequeña cornamenta y colmillos que sobresalen del maxilar superior y la hembra una protuberancia con un mechón de pelo. Es de hábitos solitarios. Come hojas, frutas y pequeños animales.");
-        Animal1.add("Aqui puedes ver el muntjac tambien conocido como ciervo raton");
-        Animal1.add("5");
-        b.putStringArrayList("key",Animal1 );
-        animal_activity.putExtras(b);
-
-        startActivity(animal_activity);
-    }
-
-    public  void telegram(View view){
-
-        Intent telegram = new Intent(Intent.ACTION_VIEW , Uri.parse("https://t.me/BiodomoBot"));
-        startActivity(telegram);
-
-    }
-    public  void Videos_informativos(View view){
-
-        Intent telegram = new Intent(Intent.ACTION_VIEW , Uri.parse("https://www.youtube.com/playlist?list=PLd4iYJozvaoP7p5lAcuQG_0ax6axqWv_6&app=desktop"));
-        startActivity(telegram);
-
-    }
-
-
+    /**
+     * @brief Función al pasar a segundo plano la aplicación
+     */
     @Override
     protected void onPause() {
         super.onPause();

@@ -495,7 +495,7 @@ public class AnimalDetails extends AppCompatActivity implements View.OnClickList
                                         "camina por el suelo mantiene erguida la cola para señalar su presencia al resto de sus congéneres. " +
                                         "También se comunica por vocalizaciones, por actitudes corporales y por expresiones del rostro. Se " +
                                         "alimenta de frutos, hojas, flores, cortezas y pequeños insectos.");   }}
-                                        , 2)
+                                        , 1)
                                     );
                         break;
                    case 1:
