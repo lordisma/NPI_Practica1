@@ -278,7 +278,7 @@ public class principal extends AppCompatActivity {
         ArrayList<String> Animal1 = new ArrayList<String>();
         Animal1.add("biodomo");
         Animal1.add("lemuretiquetas");
-        Animal1.add("WELLCOME TO BIODOMO\nAnimales disponibles: ajolotes, nutrias, lemures, muntjacs, ranas cornudas y anguilas jardineras \nPreguntas:que les gusta comer, donde viven, como se reproducen, como son, cuanto miden, cuanto pesan");
+        Animal1.add("WELCOME TO BIODOMO\nAnimales disponibles: ajolotes, nutrias, lemures, muntjacs, ranas cornudas y anguilas jardineras \nPreguntas:que les gusta comer, donde viven, como se reproducen, como son, cuanto miden, cuanto pesan");
         Animal1.add("Hola. Bienvenido a Biodomo. Soy Wooper y durante esta aventura yo seré tu guía. Puedes preguntarme sobre ajolotes, nutrias, lemures, muntjacs, ranas cornudas y anguilas jardineras. ¡Sé mucho sobre ellos! Conozco lo que les gusta comer, donde viven, como se reproducen, como son, cuanto miden, cuanto pesan... Llevo mucho tiempo observándolos. ");
         Animal1.add("0");
         b.putStringArrayList("key",Animal1 );
